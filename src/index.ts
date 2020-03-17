@@ -2,17 +2,17 @@ import { stringify } from 'query-string';
 import { fetchUtils, DataProvider } from 'ra-core';
 
 /**
- * Maps react-admin queries to a simple REST API
+ * Maps react-admin queries to a Apiato's REST API
  *
- * This REST dialect is similar to the one of FakeRest
+ * This REST dialect is designed for Apiato
  *
- * @see https://github.com/marmelab/FakeRest
+ * @see https://github.com/apiato/apiato
  *
  * @example
  *
- * getList     => GET http://my.api.url/posts?sort=['title','ASC']&range=[0, 24]
+ * getList     => GET http://my.api.url/posts?limit=10&page=1
  * getOne      => GET http://my.api.url/posts/123
- * getMany     => GET http://my.api.url/posts?filter={id:[123,456,789]}
+ * getMany     => GET http://my.api.url/posts
  * update      => PUT http://my.api.url/posts/123
  * create      => POST http://my.api.url/posts
  * delete      => DELETE http://my.api.url/posts/123
@@ -21,12 +21,12 @@ import { fetchUtils, DataProvider } from 'ra-core';
  *
  * import React from 'react';
  * import { Admin, Resource } from 'react-admin';
- * import simpleRestProvider from 'ra-data-simple-rest';
+ * import apiatoRestProvider from 'ra-data-apaito-rest';
  *
  * import { PostList } from './posts';
  *
  * const App = () => (
- *     <Admin dataProvider={simpleRestProvider('http://path.to.my.api/')}>
+ *     <Admin dataProvider={apiatoRestProvider('http://path.to.my.api/')}>
  *         <Resource name="posts" list={PostList} />
  *     </Admin>
  * );
@@ -38,27 +38,15 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson): DataProvider => ({
         const { page, perPage } = params.pagination;
         const { field, order } = params.sort;
         const query = {
-            sort: JSON.stringify([field, order]),
-            range: JSON.stringify([(page - 1) * perPage, page * perPage - 1]),
-            filter: JSON.stringify(params.filter),
+            limit: JSON.stringify(perPage),
+            page: JSON.stringify(page),
         };
         const url = `${apiUrl}/${resource}?${stringify(query)}`;
 
         return httpClient(url).then(({ headers, json }) => {
-            if (!headers.has('content-range')) {
-                throw new Error(
-                    'The Content-Range header is missing in the HTTP Response. The simple REST data provider expects responses for lists of resources to contain this header with the total number of results to build the pagination. If you are using CORS, did you declare Content-Range in the Access-Control-Expose-Headers header?'
-                );
-            }
             return {
-                data: json,
-                total: parseInt(
-                    headers
-                        .get('content-range')
-                        .split('/')
-                        .pop(),
-                    10
-                ),
+                data: json.data,
+                total: json.meta.pagination.total,
             };
         });
     },
@@ -69,10 +57,7 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson): DataProvider => ({
         })),
 
     getMany: (resource, params) => {
-        const query = {
-            filter: JSON.stringify({ id: params.ids }),
-        };
-        const url = `${apiUrl}/${resource}?${stringify(query)}`;
+        const url = `${apiUrl}/${resource}/${params.ids}`;
         return httpClient(url).then(({ json }) => ({ data: json }));
     },
 
@@ -80,46 +65,31 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson): DataProvider => ({
         const { page, perPage } = params.pagination;
         const { field, order } = params.sort;
         const query = {
-            sort: JSON.stringify([field, order]),
-            range: JSON.stringify([(page - 1) * perPage, page * perPage - 1]),
-            filter: JSON.stringify({
-                ...params.filter,
-                [params.target]: params.id,
-            }),
+            limit: JSON.stringify(perPage),
+            page: JSON.stringify(page),
         };
         const url = `${apiUrl}/${resource}?${stringify(query)}`;
 
         return httpClient(url).then(({ headers, json }) => {
-            if (!headers.has('content-range')) {
-                throw new Error(
-                    'The Content-Range header is missing in the HTTP Response. The simple REST data provider expects responses for lists of resources to contain this header with the total number of results to build the pagination. If you are using CORS, did you declare Content-Range in the Access-Control-Expose-Headers header?'
-                );
-            }
             return {
-                data: json,
-                total: parseInt(
-                    headers
-                        .get('content-range')
-                        .split('/')
-                        .pop(),
-                    10
-                ),
+                data: json.data,
+                total: json.meta.pagination.total,
             };
         });
     },
 
     update: (resource, params) =>
         httpClient(`${apiUrl}/${resource}/${params.id}`, {
-            method: 'PUT',
+            method: 'PATCH',
             body: JSON.stringify(params.data),
         }).then(({ json }) => ({ data: json })),
 
-    // simple-rest doesn't handle provide an updateMany route, so we fallback to calling update n times instead
+    // apiato-rest doesn't handle provide an updateMany route, so we fallback to calling update n times instead
     updateMany: (resource, params) =>
         Promise.all(
             params.ids.map(id =>
                 httpClient(`${apiUrl}/${resource}/${id}`, {
-                    method: 'PUT',
+                    method: 'PATCH',
                     body: JSON.stringify(params.data),
                 })
             )
@@ -138,7 +108,7 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson): DataProvider => ({
             method: 'DELETE',
         }).then(({ json }) => ({ data: json })),
 
-    // simple-rest doesn't handle filters on DELETE route, so we fallback to calling DELETE n times instead
+    // apiato-rest doesn't handle filters on DELETE route, so we fallback to calling DELETE n times instead
     deleteMany: (resource, params) =>
         Promise.all(
             params.ids.map(id =>

@@ -6,7 +6,6 @@
             "es2017",
             "dom"
         ],
-        "allowJs": true,
         "jsx": "react",
         "noImplicitAny": false,
         "moduleResolution": "node",
