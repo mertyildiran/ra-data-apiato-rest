@@ -1,7 +1,7 @@
 {
-    "name": "ra-data-simple-rest",
+    "name": "ra-data-apiato-rest",
     "version": "3.2.2",
-    "description": "Simple REST data provider for react-admin",
+    "description": "Apiato REST data provider for react-admin",
     "main": "lib/index.js",
     "module": "esm/index.js",
     "sideEffects": false,
@@ -12,11 +12,12 @@
         "src"
     ],
     "authors": [
-        "François Zaninotto"
+        "François Zaninotto",
+        "M. Mert Yildiran"
     ],
-    "repository": "marmelab/react-admin",
-    "homepage": "https://github.com/marmelab/react-admin#readme",
-    "bugs": "https://github.com/marmelab/react-admin/issues",
+    "repository": "mertyildiran/ra-data-apiato-rest",
+    "homepage": "https://github.com/mertyildiran/ra-data-apiato-rest#readme",
+    "bugs": "https://github.com/mertyildiran/ra-data-apiato-rest/issues",
     "license": "MIT",
     "scripts": {
         "build": "yarn run build-cjs && yarn run build-esm",

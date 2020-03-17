@@ -1,13 +1,11 @@
-# Simple REST Data Provider For React-Admin
+# Apiato REST Data Provider For React-Admin
 
-Simple REST Data Provider for [react-admin](https://github.com/marmelab/react-admin), the frontend framework for building admin applications on top of REST/GraphQL services.
-
-![react-admin demo](http://static.marmelab.com/react-admin.gif)
+Apiato REST Data Provider for [react-admin](https://github.com/marmelab/react-admin).
 
 ## Installation
 
 ```sh
-npm install --save ra-data-simple-rest
+npm install --save ra-data-apiato-rest
 ```
 
 ## REST Dialect
@@ -26,7 +24,7 @@ This Data Provider fits REST APIs using simple GET parameters for filters and so
 | `delete`           | `DELETE http://my.api.url/posts/123`
 | `deteleMany`       | Multiple calls to `DELETE http://my.api.url/posts/123`
 
-**Note**: The simple REST data provider expects the API to include a `Content-Range` header in the response to `getList` calls. The value must be the total number of resources in the collection. This allows react-admin to know how many pages of resources there are in total, and build the pagination controls.
+**Note**: The Apiato REST data provider expects the API to include a `Content-Range` header in the response to `getList` calls. The value must be the total number of resources in the collection. This allows react-admin to know how many pages of resources there are in total, and build the pagination controls.
 
 ```
 Content-Range: posts 0-24/319
@@ -44,12 +42,12 @@ Access-Control-Expose-Headers: Content-Range
 // in src/App.js
 import React from 'react';
 import { Admin, Resource } from 'react-admin';
-import simpleRestProvider from 'ra-data-simple-rest';
+import apiatoRestProvider from 'ra-data-apiato-rest';
 
 import { PostList } from './posts';
 
 const App = () => (
-    <Admin dataProvider={simpleRestProvider('http://path.to.my.api/')}>
+    <Admin dataProvider={apiatoRestProvider('http://path.to.my.api/')}>
         <Resource name="posts" list={PostList} />
     </Admin>
 );
@@ -65,7 +63,7 @@ That means that if you need to add custom headers to your requests, you just nee
 
 ```jsx
 import { fetchUtils, Admin, Resource } from 'react-admin';
-import simpleRestProvider from 'ra-data-simple-rest';
+import apiatoRestProvider from 'ra-data-apiato-rest';
 
 const httpClient = (url, options = {}) => {
     if (!options.headers) {
@@ -75,7 +73,7 @@ const httpClient = (url, options = {}) => {
     options.headers.set('X-Custom-Header', 'foobar');
     return fetchUtils.fetchJson(url, options);
 };
-const dataProvider = simpleRestProvider('http://localhost:3000', httpClient);
+const dataProvider = apiatoRestProvider('http://localhost:3000', httpClient);
 
 render(
     <Admin dataProvider={dataProvider} title="Example Admin">
