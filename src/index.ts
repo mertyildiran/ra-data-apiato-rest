@@ -40,6 +40,8 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson): DataProvider => ({
         const query = {
             limit: JSON.stringify(perPage),
             page: JSON.stringify(page),
+            orderBy: JSON.stringify(field),
+            sortedBy: JSON.stringify(order),
         };
         const url = `${apiUrl}/${resource}?${stringify(query)}`;
 
@@ -57,7 +59,10 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson): DataProvider => ({
         })),
 
     getMany: (resource, params) => {
-        const url = `${apiUrl}/${resource}/${params.ids}`;
+        const query = {
+            in: JSON.stringify({ id: params.ids }),
+        };
+        const url = `${apiUrl}/${resource}?${stringify(query)}`;
         return httpClient(url).then(({ json }) => ({ data: json.data }));
     },
 
@@ -67,6 +72,8 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson): DataProvider => ({
         const query = {
             limit: JSON.stringify(perPage),
             page: JSON.stringify(page),
+            orderBy: JSON.stringify(field),
+            sortedBy: JSON.stringify(order),
         };
         const url = `${apiUrl}/${resource}?${stringify(query)}`;
 
