@@ -38,10 +38,10 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson): DataProvider => ({
         const { page, perPage } = params.pagination;
         const { field, order } = params.sort;
         const query = {
-            limit: JSON.stringify(perPage),
-            page: JSON.stringify(page),
-            orderBy: JSON.stringify(field),
-            sortedBy: JSON.stringify(order),
+            limit: perPage,
+            page: page,
+            orderBy: field,
+            sortedBy: order,
         };
         const url = `${apiUrl}/${resource}?${stringify(query)}`;
 
@@ -70,10 +70,10 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson): DataProvider => ({
         const { page, perPage } = params.pagination;
         const { field, order } = params.sort;
         const query = {
-            limit: JSON.stringify(perPage),
-            page: JSON.stringify(page),
-            orderBy: JSON.stringify(field),
-            sortedBy: JSON.stringify(order),
+            limit: perPage,
+            page: page,
+            orderBy: field,
+            sortedBy: order,
         };
         const url = `${apiUrl}/${resource}?${stringify(query)}`;
 
