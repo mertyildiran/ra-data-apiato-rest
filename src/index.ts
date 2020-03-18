@@ -53,12 +53,12 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson): DataProvider => ({
 
     getOne: (resource, params) =>
         httpClient(`${apiUrl}/${resource}/${params.id}`).then(({ json }) => ({
-            data: json,
+            data: json.data,
         })),
 
     getMany: (resource, params) => {
         const url = `${apiUrl}/${resource}/${params.ids}`;
-        return httpClient(url).then(({ json }) => ({ data: json }));
+        return httpClient(url).then(({ json }) => ({ data: json.data }));
     },
 
     getManyReference: (resource, params) => {
